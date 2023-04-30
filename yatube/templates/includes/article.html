@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load thumbnail %}
+
+<article>
+  <ul class="list-group">
+    <li class="list-group-item list-group-item-action list-group-item-secondary">
+
+      {% if post.author.get_full_name %}
+        Автор: {{ post.author.get_full_name }}
+      {% else %}
+        Автор: {{ post.author.username }}&nbsp;&nbsp;&nbsp;
+      {% endif %}
+
+      <a href="{% url 'posts:profile' post.author.username %}">
+        <button type="button" class="btn btn-outline-secondary">
+          все посты пользователя
+        </button>
+      </a>
+    </li>
+    <li class="list-group-item list-group-item-action list-group-item-light">
+      Дата публикации: {{ post.pub_date|date:"d E Y" }}
+    </li>
+  </ul>
+  <div class="card bg-light mb-3">
+    <div class="card-body">
+      {# Из post_detail перенесено сюда. Для превью на главной. #}
+      {% thumbnail post.image "660x159" crop="center" upscale=True as im %}
+        <img class="card-img my-2" src="{{ im.url }}">
+      {% endthumbnail %}
+      <p>{{ post.text }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'posts:post_detail' post.id %}">
+    <button type="button" class="btn btn-outline-primary">
+      подробная информация
+    </button>
+  </a>
+
+  {% if post.group %}
+    <a href="{% url 'posts:group_posts'  post.group.slug %}">
+      <button type="button" class="btn btn-outline-primary">
+        все записи группы
+      </button>
+    </a>
+  {% endif %}
+</article>
+
+{# под последним постом нет линии #}
+{% if not forloop.last %}
+  <hr>
+{% endif %}

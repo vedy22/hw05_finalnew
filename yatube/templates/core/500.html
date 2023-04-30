@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}
+  Internal Server Error
+{% endblock %}
+
+{% block content %}
+  <h1>Internal Server Error 500</h1>
+  <p>Сайт прилёг отдохнуть.</p>
+  <p>Без паники, перезагрузите страницу или попробуйте зайти через некоторое время.</p>
+  <p href="{% url 'posts:index' %}">На главную</p>
+{% endblock %}

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}
+  Forbidden Error
+{% endblock %}
+
+{% block content %}
+  <h5>Проверьте корректность URL сайта. {{ path }} не существует</h5>
+  <p>Войдите на сайт под <a href="{% url 'users:login' %}">своей учетной записью</a> или <a
+      href="{% url 'users:signup' %}">зарегистрируйтесь.</a></p>
+{% endblock %}

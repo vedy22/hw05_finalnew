@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}
+  Not Found Error
+{% endblock %}
+
+{% block content %}
+  <h1>Not Found Error 404</h1>
+  <p>Страницы с адресом {{ path }} не существует</p>
+  <a href="{% url 'posts:index' %}">На главную</a>
+{% endblock %}

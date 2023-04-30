@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}
+  Последние обновления
+{% endblock %}
+
+{% block content %}
+  {% include 'includes/switcher.html' %}
+  {% for post in page_obj %}
+    {% include 'includes/article.html' %}
+  {% endfor %}
+
+  {% include 'posts/paginator.html' %}
+
+{% endblock %}

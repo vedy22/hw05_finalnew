@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Технологии
+{% endblock %}
+
+{% block content %}
+  {% comment %} Колонки с отступом сверху и снизу {% endcomment %}
+  <div class="row">
+    <h1>Вот что я могу</h1>
+    {% comment %}
+      Боковой блок со списком технологий займет всю ширину блока на мобильном
+      и 25% при размерах экрана ≥768px
+    {% endcomment %}
+    <aside class="col-12 col-md-3">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Python
+        </li>
+        <li class="list-group-item">
+          Django
+        </li>
+        <li class="list-group-item">
+          JavaScript
+        </li>
+        <li class="list-group-item">
+          React.js
+        </li>
+        <li class="list-group-item">
+          Bubble
+        </li>
+      </ul>
+    </aside>
+    {% comment %}
+      Статья займет всю ширину блока на мобильном и 75% при размерах экрана ≥768px
+    {% endcomment %}
+    <article class="col-12 col-md-9">
+      <figure class="bg-white p-3 rounded" style="border-left: .25rem solid #42C2FF;">
+        <blockquote class="blockquote pb-2">
+          <p>
+            Привет! Меня зовут Татьяна и в данное время я учусь на Web-developer.
+          </p>
+        </blockquote>
+        <blockquote class="blockquote pb-2">
+          <p>Попозже я ещё перечислю кучу разных умных слов, а пока, полагаю, этого будет достаточно.</p>
+        </blockquote>
+      </figure>
+      <figure class="bg-white p-3 rounded" style="border-left: .25rem solid #42C2FF;">
+        <blockquote class="blockquote pb-2">
+          <p>
+            P.S. Мало знать умные слова.
+          </p>
+        </blockquote>
+      </figure>
+    </article>
+  </div>
+{% endblock %}
