@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Group, Follow
 from django.core.paginator import Paginator
@@ -143,36 +144,29 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    authors_list = Follow.objects.filter(user=request.user).values_list
-    ('author')
-    post_list = Post.objects.filter(author__in=authors_list)
-    paginator = Paginator(post_list, LIMIT_POSTS)
+    posts = Post.objects.filter(
+        author__following__user=request.user)
+    paginator = Paginator(posts, settings.LIMIT_POSTS)
     page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    context = {
-        'page': page,
-        'paginator': paginator,
-    }
+    page_obj = paginator.get_page(page_number)
+    context = {'page_obj': page_obj}
     return render(request, 'posts/follow.html', context)
 
 
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-
-    if request.user == author:
-        return redirect('posts:profile', username=username)
-
-    Follow.objects.get_or_create(user=request.user, author=author)
-
-    return redirect('posts:profile', username=username)
+    if author != request.user:
+        Follow.objects.get_or_create(user=request.user, author=author)
+    return redirect('posts:profile', author)
 
 
 @login_required
 def profile_unfollow(request, username):
-    following = request.user.follower.filter(author__username=username).first()
-
-    if following:
-        following.delete()
-
-    return redirect('posts:profile', username=username)
+    user_follower = get_object_or_404(
+        Follow,
+        user=request.user,
+        author__username=username
+    )
+    user_follower.delete()
+    return redirect('posts:profile', username)
