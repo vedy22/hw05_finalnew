@@ -125,6 +125,7 @@ def post_edit(request, post_id):
     return render(request, 'posts/post_edit.html', context)
 
 
+# Удалить пост
 @login_required
 def delete_post(request, post_id):
     remove_post = Post.objects.filter(pk=post_id)
@@ -133,6 +134,7 @@ def delete_post(request, post_id):
     return redirect('posts:index')
 
 
+# Добавить комментарий
 @login_required
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -147,6 +149,7 @@ def add_comment(request, post_id):
     return redirect('posts:post_detail', post_id=post_id)
 
 
+# Вывод постов, на которых подписан текущий пользователь
 @login_required
 def follow_index(request):
     posts = Post.objects.filter(
@@ -161,6 +164,7 @@ def follow_index(request):
     return render(request, 'posts/follow.html', context)
 
 
+# Добавить подписку на автора
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
@@ -169,6 +173,7 @@ def profile_follow(request, username):
     return redirect('posts:profile', username=username)
 
 
+# Удалить подписку на автора
 @login_required
 def profile_unfollow(request, username):
     user_follower = get_object_or_404(
