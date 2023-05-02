@@ -107,23 +107,23 @@ def post_create(request):
 def post_edit(request, post_id):
 
     post = get_object_or_404(Post, pk=post_id)
-
-    if request.user == post.author:
-        form = PostForm(
-            request.POST or None,
-            files=request.FILES or None,
-            instance=post,
-        )
-        if form.is_valid():
-            form.save()
-            return redirect('posts:post_detail', post_id=post_id)
-
-        context = {
-            'post': post,
-            'form': form,
-            'is_edit': True,
-        }
-        return render(request, 'posts/post_edit.html', context)
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=post,
+    )
+    context = {
+        'post': post,
+        'form': form,
+        'post_id': post_id,
+        'is_edit': True,
+    }
+    if request.user == post.author and form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect(f'/posts/{post.id}', id=post_id)
+    return render(request, 'posts/post_edit.html', context)
 
     return HttpResponseForbidden()
 

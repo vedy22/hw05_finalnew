@@ -1,14 +1,20 @@
+import shutil
+import tempfile
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Group, Post
+from ..models import Group, Post, Comment
 from ..forms import PostForm
 from yatube.settings import TEST_FORM_URL
 
 User = get_user_model()
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostsFormsTests(TestCase):
     """Тестирование формы поста."""
     @classmethod
@@ -39,9 +45,32 @@ class PostsFormsTests(TestCase):
             'text': cls.post.text,
         }
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+
+    def setUp(self):
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
+        )
+        SimpleUploadedFile(
+            name='small.gif',
+            content=small_gif,
+            content_type='image/gif'
+        )
+
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
+        self.guest_client = Client()
+        self.user = User.objects.create_user(username='Tatyana')
+        self.expected_post = 'Пост отредактирован'
 
     def test_create_new_post(self):
         """Тестирование создания новой записи."""
@@ -170,3 +199,23 @@ class PostsFormsTests(TestCase):
                     response._meta.get_field(field).help_text, fields
                 )
         print('test forms: Формы text_field и group_field работают.')
+
+    def test_add_comment_authorized_client(self):
+        """После успешной отправки комментарий появляется на странице поста
+        (авторизованным пользователем)."""
+        comments_count = Comment.objects.count()
+        self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=self.form_data,
+            follow=True)
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
+        self.assertTrue(Comment.objects.filter(id=1).exists())
+
+    def test_add_comment_guest_client(self):
+        """После успешной отправки комментарий не появляется на странице поста
+        (неавторизованным пользователем)."""
+        self.guest_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=self.form_data,
+            follow=True)
+        self.assertFalse(Comment.objects.filter(id=1).exists())
