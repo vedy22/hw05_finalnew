@@ -7,9 +7,7 @@
 
 {% block content %}
   <div class="mb-5">
-    <h1>Все посты пользователя {{ user.username }}</h1>
-    <div style="padding: 30px 0 0">
-      <h4 class="d-inline p-2">Всего постов: {{ user.posts.count }}</h4>
+    <h2>Все посты пользователя {{ author.username }}&nbsp;&nbsp;&nbsp;
       {% if following %}
         <a class="d-inline p-2 btn btn-lg btn-light"
           href="{% url 'posts:profile_unfollow' author.username %}" role="button"
@@ -23,7 +21,8 @@
           Подписаться
         </a>
       {% endif %}
-    </div>
+    </h2>
+    <h5>Всего постов: {{ author.posts.count }}</h5>
   </div>
 
 
