@@ -47,6 +47,7 @@
         <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
           Редактировать запись
         </a>
+        <a class="btn btn-secondary" href="{% url 'posts:delete' post.id %}">Удалить запись</a>
       {% endif %}
 
       {% if post.comments.exists %}

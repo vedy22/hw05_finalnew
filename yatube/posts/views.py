@@ -126,6 +126,14 @@ def post_edit(request, post_id):
 
 
 @login_required
+def delete_post(request, post_id):
+    remove_post = Post.objects.filter(pk=post_id)
+    remove_post.delete()
+
+    return redirect('posts:index')
+
+
+@login_required
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = CommentForm(request.POST or None)
@@ -144,9 +152,12 @@ def follow_index(request):
     posts = Post.objects.filter(
         author__following__user=request.user)
     paginator = Paginator(posts, settings.LIMIT_POSTS)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get('page_obj')
     page_obj = paginator.get_page(page_number)
-    context = {'page_obj': page_obj}
+    context = {
+        'page_obj': page_obj,
+        'paginator': paginator,
+    }
     return render(request, 'posts/follow.html', context)
 
 
@@ -155,7 +166,7 @@ def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if author != request.user:
         Follow.objects.get_or_create(user=request.user, author=author)
-    return redirect('posts:profile', author)
+    return redirect('posts:profile', username=username)
 
 
 @login_required
